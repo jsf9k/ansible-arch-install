@@ -1,0 +1,11 @@
+install:
+  hosts:
+    # haggard:
+    philthy:
+      ansible_host: 10.74.60.106
+  vars:
+    ansible_user: root
+    ansible_ssh_common_args: -o "StrictHostKeyChecking no" -o "UserKnownHostsFile /dev/null"
+    ansible_ssh_pass: blah
+    user_name: jeremy_frasier
+    user_password: '$6$blahblahblah'

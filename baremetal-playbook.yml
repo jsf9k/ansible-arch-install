@@ -1,0 +1,207 @@
+---
+- hosts: baremetal
+  tasks:
+    - name: Abort if the host is not booted from the Arch install media
+      fail:
+        msg: "This host is not booted from the Arch install media!"
+      when: ansible_nodename != 'archiso'
+    - name: Synchronize clock via NTP
+      command: timedatectl set-ntp true
+    - name: Gather install drive information
+      parted:
+        device: '{{ install_drive }}'
+        unit: GiB
+      register: install_drive_info
+    - name: Remove all partitions from install drive
+      parted:
+        device: '{{ install_drive }}'
+        number: '{{ item.num }}'
+        state: absent
+      loop: '{{ install_drive_info.partitions }}'
+    - name: Create boot partition
+      parted:
+        device: '{{ install_drive }}'
+        label: gpt
+        number: 1
+        part_end: 512MB
+        name: boot
+        flags: [boot, esp]
+        state: present
+    - name: Create root partition
+      parted:
+        device: '{{ install_drive }}'
+        label: gpt
+        number: 2
+        part_start: 512MB
+        name: root
+        flags: [lvm]
+        state: present
+    - name: Create FAT32 filesystem in boot partition
+      filesystem:
+        dev: '{{ install_drive }}{{ boot_partition_suffix }}'
+        fstype: vfat
+        opts: -F32
+        force: yes
+    - name: Remove any existing LVM volume group
+      lvg:
+        vg: VolumeGroup00
+        force: yes
+        state: absent
+    - name: Configure LVM volume group
+      lvg:
+        vg: VolumeGroup00
+        pvs:
+          - '{{ install_drive }}{{ root_partition_suffix }}'
+    - name: Configure LVM logical volumes
+      lvol:
+        vg: VolumeGroup00
+        lv: '{{ item.lv }}'
+        size: '{{ item.size }}'
+      loop:
+        - {lv: tmp, size: 512m}
+        - {lv: root, size: "100%FREE"}
+    - name: Copy LUKS keyfile
+      copy:
+        src: '{{ luks_keyfile }}'
+        dest: /root/keyfile
+    - name: Destroy any existing LUKS volume on the root volume
+      luks_device:
+        device: /dev/VolumeGroup00/root
+        state: absent
+    - name: Create and open LUKS volume in root volume
+      luks_device:
+        device: /dev/VolumeGroup00/root
+        keyfile: /root/keyfile
+        name: root
+        state: opened
+    - name: Create ext4 filesystem in root volume
+      filesystem:
+        dev: /dev/mapper/root
+        fstype: ext4
+        force: yes
+    - name: Mount root filesystem
+      mount:
+        path: /mnt
+        src: /dev/mapper/root
+        fstype: ext4
+        state: mounted
+    - name: Create mountpoint for boot volume
+      file:
+        path: /mnt/boot
+        state: directory
+    - name: Mount boot filesystem
+      mount:
+        path: /mnt/boot
+        src: '{{ install_drive }}{{ boot_partition_suffix }}'
+        fstype: vfat
+        state: mounted
+    - name: Install the pacman-contrib package (for rankmirrors)
+      pacman:
+        name:
+          - pacman-contrib
+        update_cache: yes
+    - name: Use rankmirrors to filter the fastest mirrors that support HTTPS
+      shell: curl -s "https://www.archlinux.org/mirrorlist/?country=US&protocol=https&use_mirror_status=on" | sed -e 's/^#Server/Server/' -e '/^#/d' | rankmirrors -n 5 - > /etc/pacman.d/mirrorlist
+    - name: Run pacstrap
+      command: pacstrap /mnt base dhclient efibootmgr grub openssh python
+    - name: Generate fstab
+      command: genfstab -U /mnt >> /mnt/etc/fstab
+    - name: Add root volume to fstab
+      mount:
+        fstab: /mnt/etc/fstab
+        path: /
+        src: /dev/mapper/root
+        fstype: ext4
+        opts: defaults
+        passno: '1'
+        state: present
+    - name: Add boot volume to fstab
+      mount:
+        fstab: /mnt/etc/fstab
+        path: /boot
+        src: '{{ install_drive }}{{ boot_partition_suffix }}'
+        fstype: vfat
+        opts: defaults
+        passno: '2'
+        state: present
+    - name: Add tmp volume to fstab
+      mount:
+        fstab: /mnt/etc/fstab
+        path: /tmp
+        src: /dev/mapper/tmp
+        fstype: tmpfs
+        opts: defaults
+        state: present
+    - name: Add tmp volume to crypttab
+      crypttab:
+        path: /mnt/etc/crypttab
+        backing_device: /dev/VolumeGroup00/tmp
+        name: tmp
+        password: /dev/urandom
+        opts: tmp,cipher=aes-xts-plain64,size=512
+        state: present
+    - name: Configure locale.gen
+      lineinfile:
+        dest: /mnt/etc/locale.gen
+        regexp: '{{ item.regex }}'
+        line: '{{ item.line }}'
+      loop:
+        - {regex: en_US\.UTF-8 UTF-8, line: en_US.UTF-8 UTF-8}
+        - {regex: en_US ISO-8859-1, line: en_US ISO-8859-1}
+    - name: Create locale.conf
+      copy:
+        content: "LANG=en_US.UTF-8"
+        dest: /mnt/etc/locale.conf
+    - name: Set hostname
+      copy:
+        content: '{{ inventory_hostname }}'
+        dest: /mnt/etc/hostname
+    - name: Create netctl profile for wired connection
+      copy:
+        content: |
+          Description='Wired with DHCP'
+          Interface={{ wired_interface }}
+          Connection=ethernet
+          IP=dhcp
+          IP6=dhcp-noaddr
+          # IPv6 traffic is tunneled over IPv4, which eats 20 bytes of the MTU.
+          ExecUpPost='/usr/bin/ip link set {{ wired_interface }} mtu 1480'
+        dest: /mnt/etc/netctl/wired
+    - name: Modify ssh config to allow root login
+      lineinfile:
+        dest: /mnt/etc/ssh/sshd_config
+        regexp: '{{ item.regex }}'
+        line: '{{ item.line }}'
+      loop:
+        - {regex: PermitRootLogin prohibit-password, line: PermitRootLogin yes}
+        - {regex: ChallengeResponseAuthentication no, line: ChallengeResponseAuthentication yes}
+    - name: Add mkinitcpio.conf hooks
+      lineinfile:
+        dest: /mnt/etc/mkinitcpio.conf
+        regexp: ^HOOKS=
+        line: HOOKS=(base udev autodetect keyboard keymap consolefont modconf block encrypt lvm2 filesystems fsck)
+    - name: Add commandline information to grub config
+      lineinfile:
+        dest: /mnt/etc/default/grub
+        regexp: ^GRUB_CMDLINE_LINUX=
+        line: GRUB_CMDLINE_LINUX="cryptdevice=/dev/VolumeGroup00/root:root root=/dev/mapper/root"
+    - name: Set local timezone
+      command: arch-chroot /mnt ln -sf /usr/share/zoneinfo/America/New_York /etc/localtime
+    - name: Generate adjtime file
+      command: arch-chroot /mnt hwclock --systohc
+    - name: Generate locales
+      command: arch-chroot /mnt locale-gen
+    - name: Create new initramfs
+      command: arch-chroot /mnt mkinitcpio -p linux
+    - name: Install grub
+      command: arch-chroot /mnt grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
+    - name: Create grub config
+      command: arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
+    - name: Set root password
+      shell: echo -e "{{ ansible_ssh_pass }}\n{{ ansible_ssh_pass }}" | arch-chroot /mnt passwd
+    - name: Enable wired netctl profile
+      command: arch-chroot /mnt netctl enable wired
+    - name: Enable sshd
+      command: arch-chroot /mnt systemctl enable sshd
+    - name: Shutdown
+      command: shutdown -h now
