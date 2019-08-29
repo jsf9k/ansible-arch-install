@@ -1,5 +1,5 @@
 ---
-- hosts: baremetal
+- hosts: all
   tasks:
     - name: Abort if the host is not booted from the Arch install media
       fail:
@@ -13,17 +13,10 @@
         - sync_clock
     - name: Repartition install drive
       block:
-        - name: Gather drive information
-          parted:
-            device: '{{ install_drive }}'
-            unit: GiB
-          register: install_drive_info
-        - name: Remove all partitions
-          parted:
-            device: '{{ install_drive }}'
-            number: '{{ item.num }}'
-            state: absent
-          loop: '{{ install_drive_info.partitions }}'
+        - name: Wipe install drive and all its partitions
+          command: find /dev -wholename "{{ install_drive }}*" -exec wipefs --force --all {} \;
+          tags:
+            - wipefs
         - name: Create boot partition
           parted:
             device: '{{ install_drive }}'
