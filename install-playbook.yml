@@ -250,10 +250,10 @@
     - name: Setup user account
       block:
         - name: Create user account
-          command: arch-chroot useradd --create-home --user-group --groups wheel {{ user_name }} --password {{ user_password }}
+          command: arch-chroot /mnt useradd --create-home --user-group --groups wheel {{ user_name }} --password {{ user_password }}
         - name: Copy over authorized key
           copy:
-            src: "{{ lookup('env') + '/.ssh/id_ed25519.pub'}}"
+            src: '{{ lookup("env", "HOME") }}/.ssh/id_ed25519.pub'
             dest: /mnt/home/{{ user_name }}/.ssh/authorized_keys
       tags:
         - user_account
