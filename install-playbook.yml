@@ -272,11 +272,9 @@
       tags:
         - user_account
     - name: Give passwordless sudo access to wheel group
-      lineinfile:
-        path: /etc/sudoers
-        state: present
-        regexp: '^%wheel ALL='
-        line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+      copy:
+        content: '%wheel ALL=(ALL) NOPASSWD: ALL'
+        dest: /mnt/etc/sudoers.d/wheel
         validate: /usr/sbin/visudo --check --file=%s
       tags:
         - sudo
