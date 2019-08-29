@@ -1,4 +1,17 @@
-basicui:
+all:
+  vars:
+    ansible_become: yes
+basicx:
   hosts:
     # haggard.localdomain:
     philthy.localdomain:
+home:
+  hosts:
+    # haggard.localdomain
+  vars:
+    ansible_user: shane
+cisa:
+  hosts:
+    philthy.localdomain
+  vars:
+    ansible_user: jeremy_frasier
