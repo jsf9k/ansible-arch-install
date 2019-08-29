@@ -124,7 +124,7 @@
       tags:
         - mirrors
     - name: Run pacstrap
-      command: pacstrap /mnt base dhclient efibootmgr emacs git gnupg grub openssh python screen stow sudo ufw
+      command: pacstrap /mnt base dhclient efibootmgr emacs git gnupg grub openssh python screen stow sudo
       tags:
         - pacstrap
     - name: Generate fstab
@@ -222,18 +222,6 @@
       command: arch-chroot /mnt systemctl enable sshd
       tags:
         - sshd
-    - name: Setup ufw
-      block:
-        - name: Enable ufw service
-          command: arch-chroot /mnt systemctl enable ufw
-        - name: Turn on logging
-          command: arch-chroot /mnt ufw logging on
-        - name: Allow incoming ssh
-          command: arch-chroot /mnt ufw allow ssh
-        - name: Enable firewall
-          command: arch-chroot /mnt ufw enable
-      tags:
-        - ufw
     - name: Set up initramfs
       block:
         - name: Add mkinitcpio.conf hooks

@@ -1,5 +1,50 @@
 ---
-- hosts: basicui
+- hosts: all
+  tasks:
+    - name: Ensure that core packages (from install-playbook.yml) are installed
+      pacman:
+        name:
+          - base
+          - dhclient
+          - efibootmgr
+          - emacs
+          - git
+          - gnupg
+          - grub
+          - openssh
+          - python
+          - screen
+          - stow
+          - sudo
+      tags:
+        - pacman
+    - name: Ensure basic ufw service configuration
+      block:
+        - name: Install the ufw service
+          pacman:
+            name:
+              - ufw
+          tags:
+            - pacman
+        - name: Enable and start the ufw service
+          systemd:
+            name: ufw
+            enabled: yes
+            state: started
+        - name: Allow incoming ssh traffic through the firewall
+          ufw:
+            rule: allow
+            to_port: ssh
+            proto: tcp
+            log: yes
+        - name: Enable firewall
+          ufw:
+            default: deny
+            logging: on
+            state: enabled
+      tags:
+        - ufw
+- hosts: basex
   tasks:
     - name: Install packages for a basic machine with X
       pacman:
