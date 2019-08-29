@@ -36,11 +36,10 @@
             rule: allow
             to_port: ssh
             proto: tcp
-            log: yes
         - name: Enable firewall
           ufw:
             default: deny
-            logging: on
+            logging: 'on'
             state: enabled
       tags:
         - ufw
