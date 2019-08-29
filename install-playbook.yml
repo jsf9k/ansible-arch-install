@@ -167,8 +167,8 @@
         password: /dev/urandom
         opts: tmp,cipher=aes-xts-plain64,size=512
         state: present
-        tags:
-          - crypttab
+      tags:
+        - crypttab
     - name: Set local timezone
       command: arch-chroot /mnt ln -sf /usr/share/zoneinfo/America/New_York /etc/localtime
       tags:
