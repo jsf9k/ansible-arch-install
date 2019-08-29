@@ -11,29 +11,24 @@ After booting from the Arch installation media, you will need to:
 3. Restart the ssh service using `systemctl restart sshd`.
 4. Create a keyfile on your local host containing the password for
    your LUKS root volume via `echo -n "your_password" > keyfile`.
+5. Generate a hash for the password to be used on your personal
+   account using `mkpasswd --method=sha-512`.
 
 At this point we are able to login remotely as root, so we can
-populate `baremetal-inventory.yml` and run the "baremetal" playbook:
+populate `install-inventory.yml` and run `install-playbook.yml`:
 
 ```console
-ansible-playbook -i baremetal-inventory.yml baremetal-playbook.yml
+ansible-playbook -i install-inventory.yml install-playbook.yml
 ```
 
 Note that you may have to fiddle with the UEFI settings in the BIOS in
 order to get the new installation to boot.
 
-In order to run the "ui" playbook, you first need to generate a
-password hash for your personal account:
+Once the new installation boots, you can populate `inventory.yml` and
+run `playbook.yml`:
 
 ```console
-mkpasswd --method=sha-512
-```
-
-With this in hand you can populate `ui-inventory.yml` and run the "ui"
-playbook:
-
-```console
-ansible-playbook -i ui-inventory.yml ui-playbook.yml
+ansible-playbook -i inventory.yml playbook.yml
 ```
 
 At this point your new Arch Linux system is ready to be used.
