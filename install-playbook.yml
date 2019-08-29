@@ -251,14 +251,33 @@
       block:
         - name: Create user account
           command: arch-chroot /mnt useradd --create-home --user-group --groups wheel {{ user_name }} --password {{ user_password }}
-        - name: Copy over authorized key
+        - name: Create user's ssh directory
+          file:
+            path: /mnt/home/{{ user_name }}/.ssh
+            state: directory
+        - name: Set mode, owner, and group on user's ssh directory
+          command: arch-chroot /mnt {{ item }}
+          loop:
+            - chmod 0700 /home/{{ user_name }}/.ssh
+            - chown {{ user_name }}:{{ user_name }} /home/{{ user_name }}/.ssh
+        - name: Copy over ssh key from current Ansible controller as an authorized key
           copy:
             src: '{{ lookup("env", "HOME") }}/.ssh/id_ed25519.pub'
             dest: /mnt/home/{{ user_name }}/.ssh/authorized_keys
+        - name: Set mode, owner, and group on user's authorized_key file
+          command: arch-chroot /mnt {{ item }}
+          loop:
+            - chmod 0600 /home/{{ user_name }}/.ssh/authorized_keys
+            - chown {{ user_name }}:{{ user_name }} /home/{{ user_name }}/.ssh/authorized_keys
       tags:
         - user_account
     - name: Give passwordless sudo access to wheel group
-      command: "sed --in-place 's/^# %wheel ALL=(ALL) NOPASSWD: ALL/%wheel ALL=(ALL) NOPASSWD: ALL/g' /mnt/etc/sudoers"
+      lineinfile:
+        path: /etc/sudoers
+        state: present
+        regexp: '^%wheel ALL='
+        line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+        validate: /usr/sbin/visudo --check --file=%s
       tags:
         - sudo
     - name: Reboot
