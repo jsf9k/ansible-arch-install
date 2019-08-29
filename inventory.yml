@@ -4,14 +4,16 @@ all:
 basicx:
   hosts:
     haggard.localdomain:
+    lefty.localdomain:
     philthy.localdomain:
 home:
   hosts:
-    haggard.localdomain
+    haggard.localdomain:
+    lefty.localdomain:
   vars:
     ansible_user: shane
 cisa:
   hosts:
-    philthy.localdomain
+    philthy.localdomain:
   vars:
     ansible_user: jeremy_frasier

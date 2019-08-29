@@ -2,7 +2,9 @@ all:
   hosts:
     haggard:
       ansible_host: 10.74.60.109
-      luks_keyfile: home_keyfile
+      wired_interface: enp2s0
+    lefty:
+      ansible_host: 10.74.60.110
     philthy:
       ansible_host: 10.74.60.106
       install_drive: /dev/nvme0n1
@@ -14,19 +16,20 @@ all:
     ansible_ssh_common_args: -o "StrictHostKeyChecking no" -o "UserKnownHostsFile /dev/null"
     ansible_ssh_pass: blah
     install_drive: /dev/sda
-    wired_interface: enp2s0
+    wired_interface: enp1s0
     boot_partition_suffix: '1'
     root_partition_suffix: '2'
 home:
   hosts:
-    haggard
+    haggard:
+    lefty:
   vars:
     luks_keyfile: home_keyfile
     user_name: shane
     user_password: '$6$3E9R2yo1ny0Qs$7589NlJfrjZEYd76CUdlv4o7mMs5pDhFxqsi6rLU9mdI7CsJ72OyWUCdcbcF/gnP/mpjKwSbgyv7pNNIle2N9/'
 cisa:
   hosts:
-    philthy
+    philthy:
   vars:
     luks_keyfile: cisa_keyfile
     user_name: jeremy_frasier
