@@ -1,0 +1,26 @@
+---
+- hosts: basicui
+  tasks:
+    - name: Install packages for a basic machine with X
+      pacman:
+        name:
+          - alsa-utils
+          - chromium
+          - feh
+          - ratpoison
+          - rxvt-unicode
+          - rxvt-unicode-terminfo
+          - ttf-inconsolata
+          - xdm-archlinux
+          - xlockmore
+          - xorg-server
+          - xterm
+      tags:
+        - pacman
+    - name: Enable and start the xdm service
+      systemd:
+        name: xdm-archlinux
+        enabled: yes
+        state: started
+      tags:
+        - xdm

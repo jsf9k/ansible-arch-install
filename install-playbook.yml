@@ -131,7 +131,7 @@
       tags:
         - mirrors
     - name: Run pacstrap
-      command: pacstrap /mnt base dhclient efibootmgr grub openssh python
+      command: pacstrap /mnt base dhclient efibootmgr emacs git gnupg grub openssh python screen stow sudo ufw
       tags:
         - pacstrap
     - name: Generate fstab
@@ -225,20 +225,22 @@
           command: arch-chroot /mnt netctl enable wired
       tags:
         - netctl
-    - name: Setup ssh
-      block:
-        - name: Modify ssh config to allow root login
-          lineinfile:
-            dest: /mnt/etc/ssh/sshd_config
-            regexp: '{{ item.regex }}'
-            line: '{{ item.line }}'
-          loop:
-            - {regex: PermitRootLogin prohibit-password, line: PermitRootLogin yes}
-            - {regex: ChallengeResponseAuthentication no, line: ChallengeResponseAuthentication yes}
-        - name: Enable sshd
-          command: arch-chroot /mnt systemctl enable sshd
+    - name: Enable sshd
+      command: arch-chroot /mnt systemctl enable sshd
       tags:
-        - ssh
+        - sshd
+    - name: Setup ufw
+      block:
+        - name: Enable ufw service
+          command: arch-chroot /mnt systemctl enable ufw
+        - name: Turn on logging
+          command: arch-chroot /mnt ufw logging on
+        - name: Allow incoming ssh
+          command: arch-chroot /mnt ufw allow ssh
+        - name: Enable firewall
+          command: arch-chroot /mnt ufw enable
+      tags:
+        - ufw
     - name: Set up initramfs
       block:
         - name: Add mkinitcpio.conf hooks
@@ -264,10 +266,20 @@
           command: arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
       tags:
         - grub
-    - name: Set root password
-      shell: echo -e "{{ ansible_ssh_pass }}\n{{ ansible_ssh_pass }}" | arch-chroot /mnt passwd
+    - name: Setup user account
+      block:
+        - name: Create user account
+          command: arch-chroot useradd --create-home --user-group --groups wheel {{ user_name }} --password {{ user_password }}
+        - name: Copy over authorized key
+          copy:
+            src: "{{ lookup('env') + '/.ssh/id_ed25519.pub'}}"
+            dest: /mnt/home/{{ user_name }}/.ssh/authorized_keys
       tags:
-        - root_password
+        - user_account
+    - name: Give passwordless sudo access to wheel group
+      command: "sed --in-place 's/^# %wheel ALL=(ALL) NOPASSWD: ALL/%wheel ALL=(ALL) NOPASSWD: ALL/g' /mnt/etc/sudoers"
+      tags:
+        - sudo
     - name: Shutdown
       command: shutdown -h now
       tags:
