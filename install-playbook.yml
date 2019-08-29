@@ -261,7 +261,10 @@
       command: "sed --in-place 's/^# %wheel ALL=(ALL) NOPASSWD: ALL/%wheel ALL=(ALL) NOPASSWD: ALL/g' /mnt/etc/sudoers"
       tags:
         - sudo
-    - name: Shutdown
-      command: shutdown -h now
+    - name: Reboot
+      reboot:
+        connect_timeout: 1
+        reboot_timeout: 1
+      failed_when: false
       tags:
-        - shutdown
+        - reboot
