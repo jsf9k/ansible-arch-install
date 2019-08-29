@@ -18,3 +18,5 @@ baremetal:
     wired_interface: eno1
     boot_partition_suffix: '1'
     root_partition_suffix: '2'
+    user_name: jeremy_frasier
+    user_password: '$6$blahblahblahblah'
