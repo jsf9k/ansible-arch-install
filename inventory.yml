@@ -3,11 +3,11 @@ all:
     ansible_become: yes
 basicx:
   hosts:
-    # haggard.localdomain:
+    haggard.localdomain:
     philthy.localdomain:
 home:
   hosts:
-    # haggard.localdomain
+    haggard.localdomain
   vars:
     ansible_user: shane
 cisa:
