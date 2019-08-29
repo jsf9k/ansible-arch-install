@@ -43,7 +43,7 @@
             state: enabled
       tags:
         - ufw
-- hosts: basex
+- hosts: basicx
   tasks:
     - name: Install packages for a basic machine with X
       pacman:
@@ -68,3 +68,12 @@
         state: started
       tags:
         - xdm
+- hosts: cisa
+  tasks:
+    - name: Install dev packages
+      pacman:
+        name:
+          - ansible
+          - terraform
+      tags:
+        - pacman
