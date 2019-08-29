@@ -1,4 +1,4 @@
-baremetal:
+all:
   hosts:
     # haggard:
     #   ansible_host: 10.74.60.107
@@ -9,7 +9,6 @@ baremetal:
       wired_interface: enp0s31f6
       boot_partition_suffix: p1
       root_partition_suffix: p2
-      luks_keyfile: philthy_keyfile
   vars:
     ansible_user: root
     ansible_ssh_common_args: -o "StrictHostKeyChecking no" -o "UserKnownHostsFile /dev/null"
@@ -18,5 +17,17 @@ baremetal:
     wired_interface: eno1
     boot_partition_suffix: '1'
     root_partition_suffix: '2'
+home:
+  hosts:
+    # haggard
+  vars:
+    luks_keyfile: home_keyfile
+    user_name: shane
+    user_password: '$6$3E9R2yo1ny0Qs$7589NlJfrjZEYd76CUdlv4o7mMs5pDhFxqsi6rLU9mdI7CsJ72OyWUCdcbcF/gnP/mpjKwSbgyv7pNNIle2N9/'
+cisa:
+  hosts:
+    philthy
+  vars:
+    luks_keyfile: cisa_keyfile
     user_name: jeremy_frasier
-    user_password: '$6$blahblahblahblah'
+    user_password: '$6$XyRYtYQZvB3$uQqEAp/0pwOsbkzMjJwLJz61j2.087qimMaqsQsfJDALQ5NQ0oG5GjofQq0QooXWJl3w08L.NEjeyYPeF4rc10'
