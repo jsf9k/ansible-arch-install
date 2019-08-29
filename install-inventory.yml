@@ -1,8 +1,8 @@
 all:
   hosts:
-    # haggard:
-    #   ansible_host: 10.74.60.107
-    #   luks_keyfile: haggard_keyfile
+    haggard:
+      ansible_host: 10.74.60.109
+      luks_keyfile: home_keyfile
     philthy:
       ansible_host: 10.74.60.106
       install_drive: /dev/nvme0n1
@@ -14,12 +14,12 @@ all:
     ansible_ssh_common_args: -o "StrictHostKeyChecking no" -o "UserKnownHostsFile /dev/null"
     ansible_ssh_pass: blah
     install_drive: /dev/sda
-    wired_interface: eno1
+    wired_interface: enp2s0
     boot_partition_suffix: '1'
     root_partition_suffix: '2'
 home:
   hosts:
-    # haggard
+    haggard
   vars:
     luks_keyfile: home_keyfile
     user_name: shane
