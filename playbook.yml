@@ -14,6 +14,7 @@
           - screen
           - source-highlight
           - stow
+          - wpa-supplicant
       tags:
         - pacman
     - name: Install pyenv
