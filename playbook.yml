@@ -36,7 +36,6 @@
           command: ./deploy.sh
           args:
             chdir: /home/{{ ansible_user }}/.dotfiles
-            creates: /home/{{ ansible_user }}/.bashrc.d
       become_user: "{{ ansible_user }}"
       tags:
         - dotfiles
@@ -119,7 +118,6 @@
           command: ./deploy.sh
           args:
             chdir: /home/{{ ansible_user }}/.dotfiles_cisa
-            creates: /home/{{ ansible_user }}/.emacs_identity.el
       become_user: "{{ ansible_user }}"
       tags:
         - dotfiles
@@ -147,7 +145,6 @@
           command: ./deploy.sh
           args:
             chdir: /home/{{ ansible_user }}/.dotfiles_home
-            creates: /home/{{ ansible_user }}/.emacs_identity.el
       become_user: "{{ ansible_user }}"
       tags:
         - dotfiles
