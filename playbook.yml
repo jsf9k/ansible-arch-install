@@ -1,21 +1,18 @@
 ---
 - hosts: all
   tasks:
-    - name: Ensure that core packages (from install-playbook.yml) are installed
+    - name: Install some basic packages to make the system useful
       pacman:
         name:
-          - base
-          - dhclient
-          - efibootmgr
+          - base-devel
+          - bind-tools
+          - curl
           - emacs
           - git
           - gnupg
-          - grub
-          - openssh
-          - python
           - screen
+          - source-highlight
           - stow
-          - sudo
       tags:
         - pacman
     - name: Ensure basic ufw service configuration
