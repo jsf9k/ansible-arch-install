@@ -5,6 +5,7 @@
       pacman:
         name:
           - base-devel
+          - bash-completion
           - bind-tools
           - curl
           - emacs
@@ -70,6 +71,7 @@
           - alsa-utils
           - chromium
           - feh
+          - libu2f-host
           - ratpoison
           - rxvt-unicode
           - rxvt-unicode-terminfo
@@ -77,6 +79,7 @@
           - xdm-archlinux
           - xlockmore
           - xorg-server
+          - xorg-xmodmap
           - xterm
       tags:
         - pacman
