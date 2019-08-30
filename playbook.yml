@@ -15,6 +15,28 @@
           - stow
       tags:
         - pacman
+    - name: Install pyenv
+      shell: curl https://pyenv.run | bash
+      args:
+        creates: /home/{{ ansible_user }}/.pyenv
+      become_user: "{{ ansible_user }}"
+      tags:
+        - pyenv
+    - name: Install .dotfiles
+      block:
+        - name: Checkout .dotfiles repository
+          git:
+            repo: git@github.com:jsf9k/.dotfiles.git
+            dest: /home/{{ ansible_user }}/.dotfiles
+            accept_hostkey: yes
+        - name: Install dotfiles
+          command: ./deploy.sh
+          args:
+            chdir: /home/{{ ansible_user }}/.dotfiles
+            creates: /home/{{ ansible_user }}/.bashrc.d
+      become_user: "{{ ansible_user }}"
+      tags:
+        - dotfiles
     - name: Ensure basic ufw service configuration
       block:
         - name: Install the ufw service
@@ -74,3 +96,35 @@
           - terraform
       tags:
         - pacman
+    - name: Install CISA .dotfiles
+      block:
+        - name: Checkout .dotfiles_cisa repository
+          git:
+            repo: git@github.com:jsf9k/.dotfiles_cisa.git
+            dest: /home/{{ ansible_user }}/.dotfiles_cisa
+            accept_hostkey: yes
+        - name: Install dotfiles
+          command: ./deploy.sh
+          args:
+            chdir: /home/{{ ansible_user }}/.dotfiles_cisa
+            creates: /home/{{ ansible_user }}/.emacs.d/identity.el
+      become_user: "{{ ansible_user }}"
+      tags:
+        - dotfiles
+- hosts: home
+  tasks:
+    - name: Install home .dotfiles
+      block:
+        - name: Checkout .dotfiles_home repository
+          git:
+            repo: git@github.com:jsf9k/.dotfiles_home.git
+            dest: /home/{{ ansible_user }}/.dotfiles_home
+            accept_hostkey: yes
+        - name: Install dotfiles
+          command: ./deploy.sh
+          args:
+            chdir: /home/{{ ansible_user }}/.dotfiles_home
+            creates: /home/{{ ansible_user }}/.emacs.d/identity.el
+      become_user: "{{ ansible_user }}"
+      tags:
+        - dotfiles
