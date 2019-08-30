@@ -228,7 +228,7 @@
           lineinfile:
             dest: /mnt/etc/mkinitcpio.conf
             regexp: ^HOOKS=
-            line: HOOKS=(base udev autodetect keyboard keymap consolefont modconf block encrypt lvm2 filesystems fsck)
+            line: HOOKS=(base udev autodetect keyboard keymap modconf block encrypt lvm2 filesystems fsck)
         - name: Create new initramfs
           command: arch-chroot /mnt mkinitcpio -p linux
       tags:
