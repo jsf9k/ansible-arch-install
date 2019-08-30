@@ -80,11 +80,18 @@
           - xterm
       tags:
         - pacman
-    - name: Enable and start the xdm service
-      systemd:
-        name: xdm-archlinux
-        enabled: yes
-        state: started
+    - name: Setup xdm
+      block:
+        - name: Replace dummy text with machine name
+          replace:
+            path: /etc/X11/xdm/archlinux/Xresources
+            regexp: CLIENTHOST
+            replace: '{{ ansible_hostname }}'
+        - name: Enable and start the xdm service
+          systemd:
+            name: xdm-archlinux
+            enabled: yes
+            state: started
       tags:
         - xdm
 - hosts: cisa
