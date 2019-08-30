@@ -124,7 +124,7 @@
       tags:
         - mirrors
     - name: Run pacstrap
-      command: pacstrap /mnt base dhclient efibootmgr emacs git gnupg grub openssh python screen stow sudo
+      command: pacstrap /mnt base dhclient efibootmgr grub openssh python sudo
       tags:
         - pacstrap
     - name: Generate fstab
