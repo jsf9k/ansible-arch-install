@@ -25,18 +25,14 @@
       become_user: "{{ ansible_user }}"
       tags:
         - pyenv
-    - name: Install .dotfiles
-      block:
-        - name: Checkout .dotfiles repository
-          git:
-            repo: git@github.com:jsf9k/.dotfiles.git
-            dest: /home/{{ ansible_user }}/.dotfiles
-            accept_hostkey: yes
-        - name: Install dotfiles
-          command: ./deploy.sh
-          args:
-            chdir: /home/{{ ansible_user }}/.dotfiles
+    - name: Checkout .dotfiles repository
+      git:
+        repo: git@github.com:jsf9k/.dotfiles.git
+        dest: /home/{{ ansible_user }}/.dotfiles
+        accept_hostkey: yes
       become_user: "{{ ansible_user }}"
+      notify:
+        - Install dotfiles
       tags:
         - dotfiles
     - name: Ensure basic ufw service configuration
@@ -64,6 +60,14 @@
             state: enabled
       tags:
         - ufw
+  handlers:
+    - name: Install dotfiles
+      command: ./deploy.sh
+      args:
+        chdir: /home/{{ ansible_user }}/.dotfiles
+      become_user: "{{ ansible_user }}"
+      tags:
+        - dotfiles
 - hosts: basicx
   tasks:
     - name: Install packages for a basic machine with X
@@ -120,18 +124,14 @@
         - pacman
 - hosts: cisa
   tasks:
-    - name: Install CISA .dotfiles
-      block:
-        - name: Checkout .dotfiles_cisa repository
-          git:
-            repo: git@github.com:jsf9k/.dotfiles_cisa.git
-            dest: /home/{{ ansible_user }}/.dotfiles_cisa
-            accept_hostkey: yes
-        - name: Install dotfiles
-          command: ./deploy.sh
-          args:
-            chdir: /home/{{ ansible_user }}/.dotfiles_cisa
+    - name: Checkout .dotfiles_cisa repository
+      git:
+        repo: git@github.com:jsf9k/.dotfiles_cisa.git
+        dest: /home/{{ ansible_user }}/.dotfiles_cisa
+        accept_hostkey: yes
       become_user: "{{ ansible_user }}"
+      notify:
+        - Install CISA dotfiles
       tags:
         - dotfiles
     - name: Setup feh background
@@ -145,20 +145,24 @@
         mode: 0755
       tags:
         - feh
+  handlers:
+    - name: Install CISA dotfiles
+      command: ./deploy.sh
+      args:
+        chdir: /home/{{ ansible_user }}/.dotfiles_cisa
+      become_user: "{{ ansible_user }}"
+      tags:
+        - dotfiles
 - hosts: home
   tasks:
-    - name: Install home .dotfiles
-      block:
-        - name: Checkout .dotfiles_home repository
-          git:
-            repo: git@github.com:jsf9k/.dotfiles_home.git
-            dest: /home/{{ ansible_user }}/.dotfiles_home
-            accept_hostkey: yes
-        - name: Install dotfiles
-          command: ./deploy.sh
-          args:
-            chdir: /home/{{ ansible_user }}/.dotfiles_home
+    - name: Checkout .dotfiles_home repository
+      git:
+        repo: git@github.com:jsf9k/.dotfiles_home.git
+        dest: /home/{{ ansible_user }}/.dotfiles_home
+        accept_hostkey: yes
       become_user: "{{ ansible_user }}"
+      notify:
+        - Install home dotfiles
       tags:
         - dotfiles
     - name: Setup feh background
@@ -172,3 +176,11 @@
         mode: 0755
       tags:
         - feh
+  handlers:
+    - name: Install home dotfiles
+      command: ./deploy.sh
+      args:
+        chdir: /home/{{ ansible_user }}/.dotfiles_home
+      become_user: "{{ ansible_user }}"
+      tags:
+        - dotfiles
