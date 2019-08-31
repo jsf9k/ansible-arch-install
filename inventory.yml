@@ -7,11 +7,13 @@ all:
       hosts:
         haggard:
         lefty:
+        lemmy:
         philthy:
     dev:
       hosts:
         haggard:
         lefty:
+        lemmy:
         philthy:
     home:
       hosts:
@@ -21,6 +23,7 @@ all:
         ansible_user: shane
     cisa:
       hosts:
+        lemmy:
         philthy:
       vars:
         ansible_user: jeremy_frasier
