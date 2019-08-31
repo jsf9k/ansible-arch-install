@@ -2,19 +2,25 @@ all:
   vars:
     ansible_become: yes
     ansible_ssh_common_args: -o "StrictHostKeyChecking no" -o "UserKnownHostsFile /dev/null"
-basicx:
-  hosts:
-    haggard.localdomain:
-    lefty.localdomain:
-    philthy.localdomain:
-home:
-  hosts:
-    haggard.localdomain:
-    lefty.localdomain:
-  vars:
-    ansible_user: shane
-cisa:
-  hosts:
-    philthy.localdomain:
-  vars:
-    ansible_user: jeremy_frasier
+  children:
+    basicx:
+      hosts:
+        haggard.localdomain:
+        lefty.localdomain:
+        philthy.localdomain:
+    dev:
+      hosts:
+        haggard.localdomain:
+        lefty.localdomain:
+        philthy.localdomain:
+    home:
+      hosts:
+        haggard.localdomain:
+        lefty.localdomain:
+      vars:
+        ansible_user: shane
+    cisa:
+      hosts:
+        philthy.localdomain:
+      vars:
+        ansible_user: jeremy_frasier
