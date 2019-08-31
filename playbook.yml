@@ -76,7 +76,6 @@
           - ratpoison
           - rxvt-unicode
           - rxvt-unicode-terminfo
-          - ttf-inconsolata
           - xdm-archlinux
           - xlockmore
           - xorg-server
@@ -84,6 +83,18 @@
           - xterm
       tags:
         - pacman
+    - name: Install font packages
+      pacman:
+        name:
+          - noto-fonts
+          - noto-fonts-emoji
+          - noto-fonts-extra
+          - terminus-font
+          - ttf-bitstream-vera
+          - ttf-inconsolata
+      tags:
+        - pacman
+        - fonts
     - name: Setup xdm
       block:
         - name: Replace dummy text with machine name
@@ -98,7 +109,7 @@
             state: started
       tags:
         - xdm
-- hosts: cisa
+- hosts: dev
   tasks:
     - name: Install dev packages
       pacman:
@@ -107,6 +118,8 @@
           - terraform
       tags:
         - pacman
+- hosts: cisa
+  tasks:
     - name: Install CISA .dotfiles
       block:
         - name: Checkout .dotfiles_cisa repository
