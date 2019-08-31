@@ -5,22 +5,22 @@ all:
   children:
     basicx:
       hosts:
-        haggard.localdomain:
-        lefty.localdomain:
-        philthy.localdomain:
+        haggard:
+        lefty:
+        philthy:
     dev:
       hosts:
-        haggard.localdomain:
-        lefty.localdomain:
-        philthy.localdomain:
+        haggard:
+        lefty:
+        philthy:
     home:
       hosts:
-        haggard.localdomain:
-        lefty.localdomain:
+        haggard:
+        lefty:
       vars:
         ansible_user: shane
     cisa:
       hosts:
-        philthy.localdomain:
+        philthy:
       vars:
         ansible_user: jeremy_frasier
