@@ -19,18 +19,19 @@ all:
     wired_interface: enp1s0
     boot_partition_suffix: '1'
     root_partition_suffix: '2'
-home:
-  hosts:
-    haggard:
-    lefty:
-  vars:
-    luks_keyfile: home_keyfile
-    user_name: shane
-    user_password: '$6$3E9R2yo1ny0Qs$7589NlJfrjZEYd76CUdlv4o7mMs5pDhFxqsi6rLU9mdI7CsJ72OyWUCdcbcF/gnP/mpjKwSbgyv7pNNIle2N9/'
-cisa:
-  hosts:
-    philthy:
-  vars:
-    luks_keyfile: cisa_keyfile
-    user_name: jeremy_frasier
-    user_password: '$6$XyRYtYQZvB3$uQqEAp/0pwOsbkzMjJwLJz61j2.087qimMaqsQsfJDALQ5NQ0oG5GjofQq0QooXWJl3w08L.NEjeyYPeF4rc10'
+  children:
+    home:
+      hosts:
+        haggard:
+        lefty:
+      vars:
+        luks_keyfile: home_keyfile
+        user_name: shane
+        user_password: '$6$3E9R2yo1ny0Qs$7589NlJfrjZEYd76CUdlv4o7mMs5pDhFxqsi6rLU9mdI7CsJ72OyWUCdcbcF/gnP/mpjKwSbgyv7pNNIle2N9/'
+    cisa:
+      hosts:
+        philthy:
+      vars:
+        luks_keyfile: cisa_keyfile
+        user_name: jeremy_frasier
+        user_password: '$6$XyRYtYQZvB3$uQqEAp/0pwOsbkzMjJwLJz61j2.087qimMaqsQsfJDALQ5NQ0oG5GjofQq0QooXWJl3w08L.NEjeyYPeF4rc10'
