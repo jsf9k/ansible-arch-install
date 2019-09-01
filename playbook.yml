@@ -135,14 +135,27 @@
         - pacman
 - hosts: cisa
   tasks:
-    - name: Install PIV-related packages
-      pacman:
-        name:
-          - opensc
-          - pcsc-tools
-          - libp11
+    - name: Setup PIV
+      block:
+        - name: Install PIV-related packages
+          pacman:
+            name:
+              - ccid
+              - opensc
+              - pkcs11-helper
+              - pcsc-tools
+              - libp11
+          notify:
+            - Add NSS PIV module
+          tags:
+            - pacman
+        - name: Enable and start the pcscd service
+          systemd:
+            name: pcscd
+            enabled: yes
+            state: started
       tags:
-        - pacman
+        - piv
     - name: Checkout .dotfiles_cisa repository
       git:
         repo: git@github.com:jsf9k/.dotfiles_cisa.git
@@ -169,9 +182,14 @@
       command: ./deploy.sh
       args:
         chdir: /home/{{ ansible_user }}/.dotfiles_cisa
-      become_user: "{{ ansible_user }}"
+      become_user: '{{ ansible_user }}'
       tags:
         - dotfiles
+    - name: Add NSS PIV module
+      command: modutil -force -dbdir sql:/home/{{ ansible_user }}/.pki/nssdb/ -add "PIV Module" -libfile /usr/lib/opensc-pkcs11.so
+      become_user: '{{ ansible_user }}'
+      tags:
+        - piv
 - hosts: home
   tasks:
     - name: Checkout .dotfiles_home repository
