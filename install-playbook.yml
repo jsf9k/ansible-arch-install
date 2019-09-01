@@ -75,6 +75,10 @@
             keyfile: /root/keyfile
             name: root
             state: opened
+        - name: Get UUID for root LUKS volume
+          command: blkid -s UUID -o value /dev/VolumeGroup00/root
+          register: root_luks_uuid
+          changed_when: false
       tags:
         - luks
     - name: Create filesystems
@@ -90,6 +94,14 @@
             dev: /dev/mapper/root
             fstype: ext4
             force: yes
+        - name: Get UUID for boot filesystem
+          command: blkid -s UUID -o value '{{ install_drive }}{{ boot_partition_suffix }}'
+          register: boot_uuid
+          changed_when: false
+        - name: Get UUID for root filesystem
+          command: blkid -s UUID -o value /dev/mapper/root
+          register: root_uuid
+          changed_when: false
       tags:
         - create_filesystems
     - name: Mount filesystems
@@ -97,7 +109,7 @@
         - name: Mount root filesystem
           mount:
             path: /mnt
-            src: /dev/mapper/root
+            src: UUID={{ root_uuid.stdout }}
             fstype: ext4
             state: mounted
         - name: Create mountpoint for boot volume
@@ -107,7 +119,7 @@
         - name: Mount boot filesystem
           mount:
             path: /mnt/boot
-            src: '{{ install_drive }}{{ boot_partition_suffix }}'
+            src: UUID={{ boot_uuid.stdout }}
             fstype: vfat
             state: mounted
       tags:
@@ -135,7 +147,7 @@
           mount:
             fstab: /mnt/etc/fstab
             path: /
-            src: /dev/mapper/root
+            src: UUID={{ root_uuid.stdout }}
             fstype: ext4
             opts: defaults
             passno: '1'
@@ -144,7 +156,7 @@
           mount:
             fstab: /mnt/etc/fstab
             path: /boot
-            src: '{{ install_drive }}{{ boot_partition_suffix }}'
+            src: UUID={{ boot_uuid.stdout }}
             fstype: vfat
             opts: defaults
             passno: '2'
@@ -240,7 +252,7 @@
           lineinfile:
             dest: /mnt/etc/default/grub
             regexp: ^GRUB_CMDLINE_LINUX=
-            line: GRUB_CMDLINE_LINUX="cryptdevice=/dev/VolumeGroup00/root:root root=/dev/mapper/root"
+            line: GRUB_CMDLINE_LINUX="cryptdevice=UUID={{ root_luks_uuid.stdout }}:root root=/dev/mapper/root"
         - name: Install grub
           command: arch-chroot /mnt grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
         - name: Create grub config
