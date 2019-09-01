@@ -136,6 +136,14 @@
         - pacman
 - hosts: cisa
   tasks:
+    - name: Install PIV-related packages
+      pacman:
+        name:
+          - opensc
+          - pcsc-tools
+          - libp11
+      tags:
+        - pacman
     - name: Checkout .dotfiles_cisa repository
       git:
         repo: git@github.com:jsf9k/.dotfiles_cisa.git
