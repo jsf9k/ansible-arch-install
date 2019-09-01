@@ -94,8 +94,7 @@
           - rxvt-unicode-terminfo
           - xdm-archlinux
           - xlockmore
-          - xorg-server
-          - xorg-xmodmap
+          - xorg
           - xterm
       tags:
         - pacman
