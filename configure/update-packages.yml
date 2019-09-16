@@ -1,9 +1,0 @@
----
-- hosts: all
-  tasks:
-    - name: Update packages
-      pacman:
-        update_cache: yes
-        upgrade: yes
-      tags:
-        - pacman
