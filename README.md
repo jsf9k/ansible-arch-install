@@ -1,6 +1,6 @@
-# ansible-arch #
+# ansible-arch-install #
 
-Some Ansible playbooks to help install and configure Arch Linux.
+An Ansible playbook to help install Arch Linux.
 
 ## Usage ##
 
@@ -15,22 +15,13 @@ After booting from the Arch installation media, you will need to:
    account using `mkpasswd --method=sha-512`.
 
 At this point we are able to login remotely as root, so we can
-populate `install/inventory.yml` and run `install/playbook.yml`:
+populate `inventory.yml` and run `playbook.yml`:
 
 ```console
-cd install
 ansible-playbook -i inventory.yml playbook.yml
 ```
 
 Note that you may have to fiddle with the UEFI settings in the BIOS in
 order to get the new installation to boot.
 
-Once the new installation boots, you can populate
-`configure/inventory.yml` and run `configure/playbook.yml`:
-
-```console
-cd configure
-ansible-playbook -i inventory.yml playbook.yml
-```
-
-At this point your new Arch Linux system is ready to be used.
+At this point your new Arch Linux system is ready to be configured.
