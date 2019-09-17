@@ -1,0 +1,3 @@
+---
+ansible_host: 10.74.60.109
+wired_interface: enp2s0

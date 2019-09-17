@@ -1,0 +1,4 @@
+---
+luks_keyfile: home_keyfile
+user_name: shane
+user_password: '$6$3E9R2yo1ny0Qs$7589NlJfrjZEYd76CUdlv4o7mMs5pDhFxqsi6rLU9mdI7CsJ72OyWUCdcbcF/gnP/mpjKwSbgyv7pNNIle2N9/'

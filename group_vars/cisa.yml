@@ -1,0 +1,4 @@
+---
+luks_keyfile: cisa_keyfile
+user_name: jeremy_frasier
+user_password: '$6$XyRYtYQZvB3$uQqEAp/0pwOsbkzMjJwLJz61j2.087qimMaqsQsfJDALQ5NQ0oG5GjofQq0QooXWJl3w08L.NEjeyYPeF4rc10'
