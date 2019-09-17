@@ -15,13 +15,16 @@ After booting from the Arch installation media, you will need to:
    account using `mkpasswd --method=sha-512`.
 
 At this point we are able to login remotely as root, so we can
-populate `inventory.yml` and run `playbook.yml`:
+populate `inventory.yml` and run `site.yml`:
 
 ```console
-ansible-playbook -i inventory.yml playbook.yml
+ansible-playbook -i inventory.yml site.yml
 ```
 
 Note that you may have to fiddle with the UEFI settings in the BIOS in
 order to get the new installation to boot.
 
 At this point your new Arch Linux system is ready to be configured.
+The project
+[jsf9k/ansible-home](https://github.com/jsf9k/ansible-home) can be
+used for this purpose.
