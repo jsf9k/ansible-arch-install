@@ -1,10 +1,12 @@
 ---
 all:
   children:
-    home:
-      hosts:
-        haggard:
-        lefty:
     cisa:
       hosts:
         philthy:
+    home:
+      hosts:
+        caduceus:
+        haggard:
+        lefty:
+        volver:
