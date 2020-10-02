@@ -1,0 +1,4 @@
+---
+ansible_host: 10.74.30.116
+luks_keyfile: viviana_keyfile
+wired_interface: enp0s25
