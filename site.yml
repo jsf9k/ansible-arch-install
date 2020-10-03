@@ -136,7 +136,7 @@
       tags:
         - mirrors
     - name: Run pacstrap
-      command: pacstrap /mnt base dhclient efibootmgr grub openssh python sudo
+      command: pacstrap /mnt base dhclient efibootmgr grub linux linux-firmware lvm2 netctl openssh python sudo
       tags:
         - pacstrap
     - name: Generate fstab
