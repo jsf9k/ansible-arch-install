@@ -1,0 +1,7 @@
+---
+ansible_host: 10.74.30.129
+boot_partition_suffix: p1
+install_drive: /dev/nvme0n1
+luks_keyfile: jenn_keyfile
+root_partition_suffix: p2
+wired_interface: enp0s31f6
