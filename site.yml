@@ -133,6 +133,7 @@
             update_cache: yes
         - name: Use rankmirrors to filter the fastest mirrors that support HTTPS
           shell: curl -s "https://www.archlinux.org/mirrorlist/?country=US&protocol=https&use_mirror_status=on" | sed -e 's/^#Server/Server/' -e '/^#/d' | rankmirrors -n 5 - > /etc/pacman.d/mirrorlist
+            warn=false
       tags:
         - mirrors
     - name: Run pacstrap
@@ -140,37 +141,8 @@
       tags:
         - pacstrap
     - name: Generate fstab
-      block:
-        - name: Generate blank fstab
-          command: genfstab -U /mnt >> /mnt/etc/fstab
-        - name: Add root volume to fstab
-          mount:
-            fstab: /mnt/etc/fstab
-            path: /
-            src: UUID={{ root_uuid.stdout }}
-            fstype: ext4
-            opts: defaults
-            passno: '1'
-            state: present
-        - name: Add boot volume to fstab
-          mount:
-            fstab: /mnt/etc/fstab
-            path: /boot
-            src: UUID={{ boot_uuid.stdout }}
-            fstype: vfat
-            opts: defaults
-            passno: '2'
-            state: present
-        - name: Add tmp volume to fstab
-          mount:
-            fstab: /mnt/etc/fstab
-            path: /tmp
-            src: /dev/mapper/tmp
-            fstype: tmpfs
-            opts: defaults
-            state: present
-      tags:
-        - fstab
+      shell: 
+        cmd: genfstab -U /mnt >> /mnt/etc/fstab
     - name: Add tmp volume to crypttab
       crypttab:
         path: /mnt/etc/crypttab
