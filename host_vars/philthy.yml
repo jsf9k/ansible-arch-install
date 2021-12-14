@@ -1,5 +1,5 @@
 ---
-ansible_host: 10.74.30.142
+ansible_host: 10.74.30.148
 boot_partition_suffix: p1
 install_drive: /dev/nvme0n1
 root_partition_suffix: p2

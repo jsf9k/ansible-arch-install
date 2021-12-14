@@ -10,3 +10,6 @@ all:
         haggard:
         lefty:
         volver:
+    thunderbolt:
+      hosts:
+        philthy:

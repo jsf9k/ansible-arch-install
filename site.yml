@@ -286,6 +286,20 @@
         validate: /usr/sbin/visudo --check --file=%s
       tags:
         - sudo
+
+- hosts: thunderbolt
+  tasks:
+    - name: Install and enable bolt
+      block:
+        - name: Install bolt
+          ansible.builtin.command: arch-chroot /mnt pacman --sync --noconfirm bolt
+        - name: Enable bolt service
+          ansible.builtin.command: arch-chroot /mnt systemctl enable bolt.service
+      tags:
+        - thunderbolt
+
+- hosts: all
+  tasks:
     - name: Reboot
       reboot:
         connect_timeout: 1
